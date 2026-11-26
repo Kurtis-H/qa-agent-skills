@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: ruff check . && ruff format --check .
+      - run: pytest -q
+
+  # Whole pipeline with the scripted stand-in model, including the heavy task:
+  # the generated Playwright file is scored against bug-hunt-lab's real bugs.
+  pipeline:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/bug-hunt-lab
+          path: bug-hunt-lab
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - working-directory: bug-hunt-lab
+        run: npm ci && npx playwright install --with-deps chromium
+      - run: skill-evals --provider fake --repeat 1 --md report.md
+        env:
+          BUG_HUNT_LAB: bug-hunt-lab
+
+  # Real local-model runs, recorded on a GPU machine and committed to cassettes/.
+  replay:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: No recordings yet
+        if: hashFiles('cassettes/*.json') == ''
+        run: echo "No cassettes yet - record one with --record (see README)."
+      - uses: actions/setup-python@v5
+        if: hashFiles('cassettes/text-tasks.json') != ''
+        with:
+          python-version: "3.12"
+      - if: hashFiles('cassettes/text-tasks.json') != ''
+        run: |
+          pip install -e .
+          skill-evals --replay cassettes/text-tasks.json --only flaky-triage-1 --only scan-triage-1 \
+            --only bug-report-1 --md report.md

@@ -1,0 +1,8 @@
+{
+ "id": "bug-report-1",
+ "skill": "bug-report-writing",
+ "grader": "bug_report",
+ "prompt": "Write a bug report from this user message and their answers to follow-up questions.\n\nMessage: \"the discount thing is broken on my phone!! contact me at sam.tester@example.com\"\nSteps: added the USB-C Hub to the cart, opened the cart, typed SAVE10, tapped Apply twice\nExpected: 10% off once\nActual: the discount came off twice, total was $81.15\nEnvironment: my phone, the shop website\nFrequency: every time I tap Apply more than once\nEvidence: none\n\nReply with the bug report in markdown only.",
+ "source": "the discount thing is broken on my phone!! contact me at [email] added the USB-C Hub to the cart, opened the cart, typed SAVE10, tapped Apply twice 10% off once the discount came off twice, total was $81.15 my phone, the shop website every time I tap Apply more than once none",
+ "email": "sam.tester@example.com"
+}

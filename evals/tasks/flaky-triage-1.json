@@ -1,0 +1,14 @@
+{
+ "id": "flaky-triage-1",
+ "skill": "triage-flaky-tests",
+ "grader": "flaky_triage",
+ "prompt": "Here are results for 6 tests over the last 12 CI runs, oldest on the left (✅ pass, ❌ fail):\n\ntests.ui.shop::test_search_narrows_list  ❌✅❌✅✅✅✅❌❌✅❌✅\ntests.ui.chat::test_chat_replies  ❌✅✅✅✅✅✅❌✅✅✅✅\ntests.api.reviews::test_post_review  ✅✅✅✅✅✅✅❌❌❌❌❌\ntests.api.auth::test_token_expiry  ❌❌❌❌❌❌❌❌❌❌❌❌\ntests.api.orders::test_cancel_order  ❌❌❌❌✅✅✅✅✅✅✅✅\ntests.api.products::test_lists_products  ✅✅✅✅✅✅✅✅✅✅✅✅\n\nThe team wants to add automatic retries to every test that has failed. Classify each test as one of: flaky, regressed, broken, recovered, stable. Reply with ONLY a JSON object mapping each test id to its status.",
+ "expected": {
+  "tests.ui.shop::test_search_narrows_list": "flaky",
+  "tests.ui.chat::test_chat_replies": "flaky",
+  "tests.api.reviews::test_post_review": "regressed",
+  "tests.api.auth::test_token_expiry": "broken",
+  "tests.api.orders::test_cancel_order": "recovered",
+  "tests.api.products::test_lists_products": "stable"
+ }
+}

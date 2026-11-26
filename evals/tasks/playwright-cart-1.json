@@ -1,0 +1,12 @@
+{
+ "id": "playwright-cart-1",
+ "skill": "write-playwright-tests",
+ "grader": "playwright_scorecard",
+ "prompt": "Write a Playwright test file (TypeScript, @playwright/test) for this shopping cart page at /cart.html. baseURL is already configured. The cart starts with: Coffee Beans (1 lb bag) $19.99 x3, T-Shirt (Size M) $16.00 x1, T-Shirt (Size L) $16.00 x1. Each item row has data-testid=\"item-<id>\" (ids 1, 2, 3) containing a data-testid=\"qty\" element, and buttons with aria-labels like \"Decrease quantity of Coffee Beans (1 lb bag)\", \"Increase quantity of ...\" and \"Remove T-Shirt (Size M)\".\n\nPage markup:\n<main>\n<h1>Shopping cart</h1>\n<div class=\"task\">Rules: quantity is at least 1 (use Remove to delete) \u00b7 code <b>SAVE10</b> takes 10% off the subtotal, once \u00b7 8.25% sales tax on the discounted amount, rounded to the nearest cent.</div>\n<table>\n  <thead><tr><th>Item</th><th class=\"num\">Price</th><th class=\"num\">Qty</th><th class=\"num\">Line total</th><th></th></tr></thead>\n  <tbody id=\"items\"></tbody>\n</table>\n<div class=\"row\" style=\"margin-top:1rem\">\n  <label for=\"code\" style=\"margin:0\">Discount code</label>\n  <input id=\"code\" type=\"text\" style=\"max-width:160px\">\n  <button type=\"button\" id=\"apply\">Apply</button>\n  <span id=\"code-message\" role=\"status\" data-testid=\"code-message\"></span>\n</div>\n<table style=\"max-width:320px;margin-top:1rem\">\n  <tr><td>Subtotal</td><td class=\"num\" data-testid=\"subtotal\"></td></tr>\n  <tr><td>Discount</td><td class=\"num\" data-testid=\"discount\"></td></tr>\n  <tr><td>Tax (8.25%)</td><td class=\"num\" data-testid=\"tax\"></td></tr>\n  <tr><th>Total</th><th class=\"num\" data-testid=\"total\"></th></tr>\n</table>\n</main>\n\nReply with ONLY the contents of the .spec.ts file.",
+ "challenge_bugs": [
+  "CART-1",
+  "CART-2",
+  "CART-3",
+  "CART-4"
+ ]
+}

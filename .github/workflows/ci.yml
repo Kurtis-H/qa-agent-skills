@@ -15,7 +15,12 @@ jobs:
           python-version: "3.12"
       - run: pip install -e ".[dev]"
       - run: ruff check . && ruff format --check .
-      - run: pytest -q
+      - name: Type check (mypy)
+        run: mypy --ignore-missing-imports evals/src
+      - name: Tests with coverage (fails under 80%)
+        run: pytest -q --cov=skill_evals --cov-report=term-missing --cov-fail-under=80
+      - name: Dependency vulnerability audit
+        run: pip-audit --skip-editable
 
   # Whole pipeline with the scripted stand-in model, including the heavy task:
   # the generated Playwright file is scored against bug-hunt-lab's real bugs.

@@ -1,0 +1,6 @@
+{
+ "id": "load-test-1",
+ "skill": "load-testing",
+ "grader": "k6_script",
+ "prompt": "Write a k6 load test for our shop API at BASE_URL (env var). Users search products (GET /api/products?q=<term>) and view their order (GET /api/orders/{id}, needs a bearer token from POST /api/login with {\"username\":\"alice\",\"password\":\"alice123\"}, which returns {\"token\": ...}). Targets: 95% of requests under 300 ms for each endpoint, under 1% errors, at a peak of 50 concurrent users. Reply with ONLY the JavaScript."
+}

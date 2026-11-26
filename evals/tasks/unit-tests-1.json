@@ -1,0 +1,7 @@
+{
+ "id": "unit-tests-1",
+ "skill": "unit-and-integration-tests",
+ "grader": "unit_mutation",
+ "prompt": "Write pytest unit tests for this function. It is importable with `from shipping import shipping_cost`.\n\nshipping_cost(weight_kg: float, express: bool = False) -> int returns the shipping cost in cents.\nRules:\n- weight_kg must be more than 0 and at most 30, otherwise raise ValueError\n- 500 cents for the first kilogram (up to and including 1 kg)\n- plus 200 cents for each additional kilogram or part of one (1.2 kg costs 700, 2.0 kg costs 700, 2.1 kg costs 900)\n- standard shipping is free for orders of 10 kg or more\n- express doubles the cost and is never free\n\nReply with ONLY the contents of test_shipping.py.",
+ "module": "shipping"
+}

@@ -32,7 +32,7 @@ def test_every_skill_has_an_eval_task():
     skills = {p.name for p in SKILLS.iterdir() if p.is_dir()}
     assert covered <= skills
     missing = skills - covered
-    assert missing <= {"api-test-generation"}, f"untested skills: {missing}"
+    assert missing <= {"api-test-generation"}, f"untested skills: {missing}"  # covered by testgen-agent itself
 
 
 def test_frontmatter_is_stripped_from_prompt():
@@ -123,3 +123,70 @@ def test_cli_gate_and_report(tmp_path):
     assert main([*args, "--min-improvement", "0.9"]) == 1, "flaky triage only improves by 33%"
     assert "| scan-triage-1 |" in md.read_text()
     assert main(["--replay", str(tmp_path / "missing.json")]) == 2
+
+
+# --- second batch of graders -------------------------------------------------------------
+
+from skill_evals.graders import k6_script, pr_report, pr_review, redteam_plan, unit_mutation  # noqa: E402
+from skill_evals.graders import test_quality as grade_test_quality  # noqa: E402  (pytest would collect a test_* name)
+
+ANSWERS = ROOT / "evals" / "fixtures" / "answers"
+fake = FakeProvider()
+
+
+@pytest.mark.parametrize(
+    ("grader", "task_id"),
+    [
+        (pr_review, "pr-review-1"),
+        (grade_test_quality, "test-quality-1"),
+        (k6_script, "load-test-1"),
+        (redteam_plan, "llm-red-team-1"),
+        (pr_report, "pr-report-1"),
+    ],
+)
+def test_new_graders_separate_good_from_bad(grader, task_id):
+    t = task(task_id)
+    good = grader(t, fake.complete("<skill>", t["prompt"]))[0]
+    bad = grader(t, fake.complete("", t["prompt"]))[0]
+    assert good == 1.0 and bad < 0.5
+
+
+def test_mutation_grader_rewards_boundaries_not_coverage():
+    t = task("unit-tests-1")
+    assert unit_mutation(t, (ANSWERS / "strong_test_shipping.py").read_text())[0] == 1.0
+    weak_score, weak_checks = unit_mutation(t, (ANSWERS / "weak_test_shipping.py").read_text())
+    assert weak_score == 0.0 and weak_checks[0] == ("tests pass on the correct code", True)
+
+
+def test_mutation_grader_rejects_tests_that_fail_on_correct_code():
+    t = task("unit-tests-1")
+    wrong = "from shipping import shipping_cost\n\ndef test_wrong():\n    assert shipping_cost(1) == 999\n"
+    assert unit_mutation(t, wrong) == (0.0, [("tests pass on the correct code", False)])
+
+
+def test_secret_and_token_leaks_cost_points():
+    review = task("pr-review-1")
+    good = fake.complete("<skill>", review["prompt"])
+    assert pr_review(review, good + f" key: {review['secret']}")[0] < 1.0
+    report = task("pr-report-1")
+    good = fake.complete("<skill>", report["prompt"])
+    assert pr_report(report, good + report["token"])[0] < 1.0
+
+
+def test_test_quality_grader_punishes_flagging_good_tests():
+    t = task("test-quality-1")
+    good = json.loads(fake.complete("<skill>", t["prompt"]))
+    good["issues"].append({"line": 18, "type": "weak-assertion"})
+    assert grade_test_quality(t, json.dumps(good))[0] < 1.0
+
+
+def test_playwright_grader_reports_broken_environment_instead_of_zero(tmp_path, monkeypatch):
+    # Regression: a scorecard that crashed (e.g. dependencies not installed) used to be graded
+    # as "tests pass, caught 0 bugs" - blaming the model for an environment problem.
+    from skill_evals.graders import playwright_scorecard
+
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "scorecard.mjs").write_text("throw new Error('Cannot find module playwright');\n")
+    monkeypatch.setenv("BUG_HUNT_LAB", str(tmp_path))
+    with pytest.raises(ProviderError, match="did not run"):
+        playwright_scorecard(task("playwright-cart-1"), "test('x', () => {});")

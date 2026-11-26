@@ -65,4 +65,5 @@ jobs:
         run: |
           pip install -e .
           skill-evals --replay cassettes/text-tasks.json --only flaky-triage-1 --only scan-triage-1 \
-            --only bug-report-1 --md report.md
+            --only bug-report-1 --only pr-review-1 --only test-quality-1 --only pr-report-1 \
+            --only load-test-1 --only llm-red-team-1 --md report.md

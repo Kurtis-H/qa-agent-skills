@@ -1,6 +1,6 @@
 ---
 name: api-test-generation
-description: Generate API tests from an OpenAPI spec that are verified against a running API and never encode bugs as expected behavior. Use when asked to write, generate or expand tests for a REST/JSON API.
+description: Write or generate API tests - from an OpenAPI spec or by hand - covering contracts, validation, auth, security and concurrency, verified against a running API without ever encoding bugs as expected behavior. Use when asked to test, write tests for, or generate tests for a REST/JSON API.
 ---
 
 # Generating API tests safely
@@ -42,7 +42,26 @@ Describe tests as data (method, path, query, body, expected status, expected fie
 render them with a fixed template. Reviewers can read data at a glance, and nothing you
 write gets executed as arbitrary code.
 
-## 5. Measure, don't count
+## 5. What every API test suite needs (generated or hand-written)
+
+- **Contract:** response shapes match the spec, and unexpected fields fail the test
+  (an extra field can be a data leak, like a password hash).
+- **Status codes:** bad input gets 400 or 422, not 200 with an empty body, and not 500.
+- **Auth:** no token → 401; a bad or expired token → 401; a valid token for the wrong
+  user → 403 or 404. **Test every ID in a URL with another user's token** (broken object-level
+  authorization is the most common API vulnerability).
+- **Mass assignment:** send fields the client shouldn't control (`"role": "admin"`,
+  `"price": 0`) and assert they're ignored.
+- **Idempotency:** PUT and DELETE twice give the same result. Retried POSTs with an
+  idempotency key don't create duplicates.
+- **Concurrency:** fire many simultaneous requests at limited stock (the last seat, a
+  one-time code) and assert exactly one succeeds.
+- **Pagination:** walk every page; the counts add up; out-of-range pages behave as documented.
+- **Rate limits:** if documented, hit them and assert 429 with a retry header.
+- **Fuzzing:** property-based tools like Schemathesis throw thousands of generated inputs
+  at every endpoint from the spec. Any 500 is a bug.
+
+## 6. Measure, don't count
 
 Test count means nothing. If one-bug copies of the API exist (mutants), run the kept tests
 against each: a mutant that survives is a gap. Report which ones and suggest the missing test.

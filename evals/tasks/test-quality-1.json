@@ -1,0 +1,21 @@
+{
+ "id": "test-quality-1",
+ "skill": "test-quality-review",
+ "grader": "test_quality",
+ "prompt": "Review the quality of this Playwright test file for a shopping cart (rules: quantity at least 1, code SAVE10 gives 10% off once, 8.25% tax rounded to the nearest cent).\n\n  1  import { test, expect } from '@playwright/test';\n  2  test.describe.configure({ retries: 3 });\n  3  \n  4  test('cart works', async ({ page }) => {\n  5    await page.goto('/cart.html');\n  6    await expect(page.getByTestId('total')).toBeVisible();\n  7  });\n  8  \n  9  test('apply discount', async ({ page }) => {\n 10    await page.goto('/cart.html');\n 11    await page.getByLabel('Discount code').fill('SAVE10');\n 12    await page.getByRole('button', { name: 'Apply' }).click();\n 13    await page.waitForTimeout(3000);\n 14  });\n 15  \n 16  test('tax is rounded to the nearest cent', async ({ page }) => {\n 17    await page.goto('/cart.html');\n 18    await expect(page.getByTestId('tax')).toHaveText('$7.59');\n 19  });\n\nReply with ONLY JSON: {\"issues\": [{\"line\": <n>, \"type\": \"weak-assertion|no-assertion|fixed-sleep|retries|other\", \"fix\": \"...\"}], \"missing_tests\": [\"...\"]}",
+ "planted": {
+  "2": "retries",
+  "6": "weak-assertion",
+  "13": "fixed-sleep"
+ },
+ "no_assertion_test_lines": [
+  9,
+  14
+ ],
+ "good_lines": [
+  16,
+  17,
+  18,
+  19
+ ]
+}

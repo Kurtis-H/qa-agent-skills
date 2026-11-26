@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       # Older Python images bundle outdated packaging tools with known CVEs; update them first.
@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: pip install -e .
@@ -57,7 +57,7 @@ jobs:
       - name: No recordings yet
         if: hashFiles('cassettes/*.json') == ''
         run: echo "No cassettes yet - record one with --record (see README)."
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: hashFiles('cassettes/text-tasks.json') != ''
         with:
           python-version: "3.12"

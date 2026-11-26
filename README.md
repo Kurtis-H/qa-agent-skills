@@ -1,4 +1,4 @@
-# 🧠 QA Agent Skills
+# QA Agent Skills
 
 ![CI](https://github.com/Kurtis-H/qa-agent-skills/actions/workflows/ci.yml/badge.svg)
 

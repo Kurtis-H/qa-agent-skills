@@ -33,7 +33,7 @@ scan-triage reports/ --suppressions triage-suppressions.toml
 
 If it isn't available, apply the same rules by hand.
 
-## 2. Normalise and deduplicate
+## 2. Normalize and deduplicate
 
 - The same ZAP alert on many URLs is ONE finding with many locations.
 - Strip hosts and parameter values when comparing URLs (`GET /search?q`).

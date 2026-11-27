@@ -40,7 +40,7 @@ Fail rate alone can't tell these apart: both examples above can have the same fa
 - **Regressed:** find the change made between the last ✅ and the first ❌. Treat it as a
   product bug until proven otherwise. Never add retries.
 - **Broken:** a real failure. Fix the test or the code; don't retry.
-- **Flaky:** group failures by error signature (normalise timings and IDs: "Timeout 5012ms"
+- **Flaky:** group failures by error signature (normalize timings and IDs: "Timeout 5012ms"
   and "Timeout 5098ms" are the same problem), then look for the cause:
   - waiting on fixed sleeps instead of a condition
   - tests sharing data or depending on run order

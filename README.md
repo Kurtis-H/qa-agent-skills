@@ -29,7 +29,7 @@ To use one with Claude Code, copy its folder into `.claude/skills/` in your proj
 
 ## Do they actually help? Measured, not assumed
 
-Most published skills are never tested. Here, every skill has evaluation tasks, and each task runs **with and without** the skill, several times, on the same model:
+Most published skills are never tested. Here, 10 of the 11 skills have an evaluation task (`api-test-generation` doesn't yet), and each task runs **with and without** the skill, several times, on the same model:
 
 | Task | What's graded (all by code, not an AI judge) |
 |---|---|
@@ -62,7 +62,7 @@ BUG_HUNT_LAB=../bug-hunt-lab skill-evals --only playwright-cart-1   # needs bug-
 ### Record once, replay in CI
 
 ```bash
-skill-evals --only flaky-triage-1 --only scan-triage-1 --only bug-report-1 --only pr-review-1 \\
+skill-evals --only flaky-triage-1 --only scan-triage-1 --only bug-report-1 --only pr-review-1 \
   --only test-quality-1 --only pr-report-1 --only load-test-1 --only llm-red-team-1 --record cassettes/text-tasks.json
 ```
 
@@ -80,7 +80,7 @@ CI also runs everything with `--provider fake`, a scripted stand-in that does be
 
 - **Skills that wrap real tools beat generic advice.** "Write good tests" is noise. "Test exactly at the limit, one below and one above; count requests to catch double submits" changes what an agent does.
 - **Graders are code.** An AI judge grading AI output needs its own calibration (that's what [llm-arena](https://github.com/Kurtis-H/llm-arena) is about). These tasks were chosen so code can grade them exactly.
-- **The grader got tested too.** The first version of the bug-report grader flagged "the user's phone" as an invented detail (the apostrophe looked like a quote) and penalised the quoted reason in a severity line. Tests now cover both, so the grader doesn't punish good answers.
+- **The grader got tested too.** The first version of the bug-report grader flagged "the user's phone" as an invented detail (the apostrophe looked like a quote) and penalized the quoted reason in a severity line. Tests now cover both, so the grader doesn't punish good answers.
 - **Free only.** Local models through Ollama. No paid APIs anywhere.
 
 ## License
